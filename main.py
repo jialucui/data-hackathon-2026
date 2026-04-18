@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request, Form
+import base64
+from fastapi import FastAPI, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -18,10 +19,17 @@ async def campaign(
     request: Request,
     product: str = Form(...),
     audience: str = Form("general audience"),
-    goal: str = Form("increase brand awareness")
+    goal: str = Form("increase brand awareness"),
+    asset: UploadFile = File(None)
 ):
     data = generate_campaign(product, audience, goal)
-    return templates.TemplateResponse("campaign.html", {"request": request, "data": data})
+    
+    image_b64 = None
+    if asset and asset.filename:
+        content = await asset.read()
+        image_b64 = f"data:{asset.content_type};base64,{base64.b64encode(content).decode('utf-8')}"
+
+    return templates.TemplateResponse("campaign.html", {"request": request, "data": data, "product": product, "image_b64": image_b64})
 
 @app.get("/trends", response_class=HTMLResponse)
 async def trends(request: Request):

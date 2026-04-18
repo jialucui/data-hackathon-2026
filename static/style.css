@@ -1,5 +1,14 @@
-/* Windows 95 / Minesweeper CSS */
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+:root {
+  --bg-color: #fcfcfc;
+  --hud-blue: #2A4893;
+  --hud-blue-light: #5B7DD2;
+  --hud-blue-hover: #182a5c;
+  --grid-color: rgba(42, 72, 147, 0.08);
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-pixel: 'VT323', monospace;
+}
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -8,362 +17,304 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
-  font-size: 12px;
-  background-color: #008080; /* Classic Win95 teal desktop */
+  background-color: var(--bg-color);
+  color: var(--hud-blue);
+  font-family: var(--font-mono);
+  font-size: 14px;
   min-height: 100vh;
+  /* Blueprint Grid Background */
+  background-image: 
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
+  position: relative;
+  overflow-x: hidden;
 }
 
-.desktop {
+/* Global HUD Overlays */
+.hud-corner {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--hud-blue);
+  z-index: 100;
+  pointer-events: none;
+}
+.hud-tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+.hud-tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+.hud-bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+.hud-br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+.hud-header {
+  position: fixed;
+  top: 20px;
+  left: 80px;
+  right: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.hud-footer {
+  position: fixed;
+  bottom: 20px;
+  left: 80px;
+  right: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 10px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Layout */
+.container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* Icons would float freely on a real desktop - windows are centered */
-  align-items: center;
-  justify-content: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 10;
+}
+
+.main-title {
+  font-size: 48px;
+  line-height: 1;
+  font-weight: normal;
+  margin: 0 0 40px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Panels */
+.panel {
+  border: 1px solid var(--hud-blue);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
   padding: 20px;
-  padding-bottom: 50px; /* make room for taskbar */
+  position: relative;
 }
 
-/* ========================
-   WINDOW CHROME
-======================== */
-.window {
-  background: #c0c0c0;
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #808080;
-  border-bottom: 2px solid #808080;
-  box-shadow: 2px 2px 0 #000000;
-  min-width: 320px;
-  width: 100%;
-  max-width: 520px;
+.panel::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 10px;
+  right: 10px;
+  height: 1px;
+  background: var(--bg-color);
+  z-index: 1;
 }
 
-.window-main { max-width: 480px; }
-.window-result { max-width: 560px; }
-.window-trends { max-width: 480px; }
-
-.title-bar {
-  height: 22px;
-  background: linear-gradient(to right, #000080, #1084d0);
-  padding: 2px 4px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  user-select: none;
-}
-
-.title-bar-text {
-  color: white;
-  font-weight: bold;
+.panel-header {
+  background: var(--hud-blue);
+  color: var(--bg-color);
+  padding: 4px 8px;
   font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-block;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: absolute;
+  top: -12px;
+  left: -1px;
 }
 
-.title-bar-controls {
+.panel-header-right {
+  left: auto;
+  right: -1px;
+}
+
+/* Forms & Inputs */
+.form-group {
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+input[type="text"], select, textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--hud-blue);
+  color: var(--hud-blue);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  padding: 8px 0;
+  outline: none;
+  transition: all 0.3s;
+}
+
+input[type="text"]:focus, select:focus, textarea:focus {
+  border-bottom: 2px solid var(--hud-blue);
+  background: rgba(42, 72, 147, 0.03);
+}
+
+input::placeholder {
+  color: var(--hud-blue-light);
+  opacity: 0.5;
+}
+
+.file-upload-wrapper {
+  border: 1px dashed var(--hud-blue);
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.file-upload-wrapper:hover {
+  background: rgba(42, 72, 147, 0.05);
+}
+
+.file-upload-wrapper input[type="file"] {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0; cursor: pointer;
+}
+
+/* Buttons */
+.hud-btn {
+  background: transparent;
+  border: 1px solid var(--hud-blue);
+  color: var(--hud-blue);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 10px 24px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-btn::before {
+  content: '[';
+}
+.hud-btn::after {
+  content: ']';
+}
+
+.hud-btn:hover {
+  background: var(--hud-blue);
+  color: var(--bg-color);
+}
+
+/* Dashboard Grid Layout */
+.dashboard {
+  display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  gap: 40px;
+  align-items: start;
+}
+
+.wireframe-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  position: relative;
+}
+
+/* Simulated 3D wireframe animation using SVG/CSS */
+.wireframe-svg {
+  width: 100%;
+  height: 100%;
+  stroke: var(--hud-blue);
+  stroke-width: 0.5;
+  fill: none;
+  animation: rotateWireframe 20s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes rotateWireframe {
+  0% { transform: rotateY(0deg) rotateX(20deg); }
+  100% { transform: rotateY(360deg) rotateX(20deg); }
+}
+
+.asset-preview {
+  width: 100%;
+  max-width: 250px;
+  aspect-ratio: 1;
+  border: 1px solid var(--hud-blue);
+  object-fit: contain;
+  margin-bottom: 20px;
+  filter: grayscale(100%) contrast(1.2) sepia(100%) hue-rotate(180deg) saturate(3);
+}
+
+/* Micro HUD Elements */
+.tech-bar {
   display: flex;
   gap: 2px;
+  height: 8px;
+  margin-top: 5px;
 }
-
-.title-bar-controls button {
-  width: 16px;
-  height: 14px;
-  background: #c0c0c0;
-  border-top: 1px solid #ffffff;
-  border-left: 1px solid #ffffff;
-  border-right: 1px solid #808080;
-  border-bottom: 1px solid #808080;
-  font-size: 9px;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: #000;
+.tech-bar div {
+  flex: 1;
+  background: var(--hud-blue);
+  opacity: 0.3;
 }
-
-.title-bar-controls button[aria-label="Minimize"]::after { content: '_'; }
-.title-bar-controls button[aria-label="Maximize"]::after { content: '□'; }
-.title-bar-controls button[aria-label="Close"]::after { content: '✕'; font-size: 8px; }
-
-.title-bar-controls button:active {
-  border-top: 1px solid #808080;
-  border-left: 1px solid #808080;
-  border-right: 1px solid #ffffff;
-  border-bottom: 1px solid #ffffff;
-}
-
-/* ========================
-   MENU BAR
-======================== */
-.menu-bar {
-  background: #c0c0c0;
-  padding: 2px 4px;
-  border-bottom: 1px solid #808080;
-  display: flex;
-  gap: 10px;
-  font-size: 12px;
-}
-
-.menu-bar span {
-  cursor: pointer;
-  padding: 1px 4px;
-}
-
-.menu-bar span:hover {
-  background: #000080;
-  color: white;
-}
-
-/* ========================
-   WINDOW BODY
-======================== */
-.window-body {
-  padding: 12px;
-}
-
-/* ========================
-   FORM ELEMENTS
-======================== */
-.field-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 12px;
-}
-
-.field-row label {
-  font-size: 12px;
-}
-
-.field-row input[type="text"] {
-  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
-  font-size: 12px;
-  padding: 3px 5px;
-  background: #ffffff;
-  border-top: 2px solid #808080;
-  border-left: 2px solid #808080;
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
-  outline: none;
-  width: 100%;
-}
-
-.field-row input[type="text"]:focus {
-  border-top-color: #000000;
-  border-left-color: #000000;
-}
-
-/* ========================
-   BUTTONS
-======================== */
-.win-btn {
-  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
-  font-size: 12px;
-  padding: 4px 16px;
-  background: #c0c0c0;
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #808080;
-  border-bottom: 2px solid #808080;
-  cursor: pointer;
-  white-space: nowrap;
-  display: inline-block;
-  min-width: 75px;
-  text-align: center;
-}
-
-.win-btn:active {
-  border-top: 2px solid #808080;
-  border-left: 2px solid #808080;
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
-  padding: 5px 15px 3px 17px; /* slight shift to simulate press */
-}
-
-.win-btn.primary {
-  font-weight: bold;
-  border: 2px solid #000000; /* thick black outline = default button */
-  box-shadow: inset 0 0 0 2px #c0c0c0;
-}
-
-/* ========================
-   TASKBAR
-======================== */
-.taskbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 34px;
-  background: #c0c0c0;
-  border-top: 2px solid #ffffff;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 4px;
-  z-index: 1000;
-}
-
-.start-btn {
-  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 2px 8px;
-  background: #c0c0c0;
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #808080;
-  border-bottom: 2px solid #808080;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.taskbar-divider {
-  width: 2px;
-  height: 26px;
-  border-left: 1px solid #808080;
-  border-right: 1px solid #ffffff;
-  margin: 0 4px;
-}
-
-.taskbar-item {
-  text-decoration: none;
-  color: #000000;
-  font-size: 12px;
-  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
-  padding: 2px 10px;
-  background: #c0c0c0;
-  border: 1px solid #c0c0c0;
-  display: flex;
-  align-items: center;
-  height: 26px;
-}
-
-.taskbar-item:hover {
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #808080;
-  border-bottom: 2px solid #808080;
-}
-
-.taskbar-item.active {
-  border-top: 1px solid #808080;
-  border-left: 1px solid #808080;
-  border-right: 1px solid #ffffff;
-  border-bottom: 1px solid #ffffff;
-  background: #b4b4b4;
-}
-
-/* ========================
-   SUNKEN PANEL
-======================== */
-.sunken-panel {
-  border-top: 2px solid #808080;
-  border-left: 2px solid #808080;
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
-}
-
-/* ========================
-   CONTENT AREA
-======================== */
-.content-area {
-  padding: 8px 4px;
-}
-
-/* ========================
-   RESULT PAGE SPECIFICS
-======================== */
-.result-content p {
-  margin-bottom: 6px;
-  line-height: 1.5;
-}
-
-.pitch-box {
-  border-top: 2px solid #808080;
-  border-left: 2px solid #808080;
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
-  background: #ffffff;
-  padding: 10px;
-  min-height: 60px;
-  line-height: 1.6;
-}
-
-/* ========================
-   TABLE
-======================== */
-table th, table td {
-  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
-  font-size: 12px;
-}
-
-/* Campaign page */
-.window-campaign {
-  max-width: 780px;
-  width: 100%;
-}
-
-.inner-window {
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #808080;
-  border-bottom: 2px solid #808080;
-}
-
-.info-chip {
-  background: #c0c0c0;
-  border-top: 2px solid #ffffff;
-  border-left: 2px solid #ffffff;
-  border-right: 2px solid #808080;
-  border-bottom: 2px solid #808080;
-  padding: 2px 8px;
-  font-size: 11px;
-  display: inline-block;
-}
-
-.video-titlebar {
-  background: linear-gradient(to right, #000080, #1a88d0);
-  cursor: pointer;
-}
-
-.script-label {
-  font-weight: bold;
-  font-size: 11px;
-  margin: 0 0 4px 0;
-}
-
-.script-part-label {
-  font-weight: bold;
-  font-size: 11px;
-  margin: 10px 0 4px 0;
-  color: #000080;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+.tech-bar div.active { opacity: 1; }
 
 .script-block {
-  border-top: 2px solid #808080;
-  border-left: 2px solid #808080;
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
-  background: #ffffff;
-  padding: 8px;
+  margin-bottom: 30px;
+  border-left: 2px solid var(--hud-blue);
+  padding-left: 20px;
+  position: relative;
 }
 
-.script-text {
-  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
-  font-size: 11px;
-  line-height: 1.6;
-  margin: 0 0 4px 0;
+.script-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--hud-blue);
+  background: var(--bg-color);
+}
+
+.script-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.script-content {
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  line-height: 1.4;
   white-space: pre-wrap;
-  word-break: break-word;
 }
 
+.action-bar {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+@media (max-width: 1200px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+}

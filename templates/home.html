@@ -1,61 +1,127 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="window window-main">
-    <div class="title-bar">
-        <div class="title-bar-text">
-            <img src="https://win98icons.alexmeub.com/icons/png/mine-0.png" width="16">
-            热度借势模拟器 — Campaign Generator.exe
-        </div>
-        <div class="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close"></button>
-        </div>
-    </div>
+<div class="dashboard">
     
-    <div class="window-body">
-        <div class="menu-bar">
-            <span><u>F</u>ile</span>
-            <span><u>E</u>dit</span>
-            <span><u>H</u>elp</span>
-        </div>
-
-        <div class="content-area">
-            <p style="margin-bottom: 5px;"><strong>热度借势模拟器 (Trending Piggybacking Simulator)</strong></p>
-            <p style="margin-bottom: 15px; color: #444;">Generate a complete 5-video YouTube campaign with full scripts. Each video uses a different trending hook to build awareness, engagement, and eventually sales.</p>
-
-            <div class="sunken-panel" style="background:#fff; padding: 8px; margin-bottom: 12px;">
-                <p style="margin:0; font-size: 11px; color:#444;">⚡ Algorithm: Scans 16,200 YouTube trending videos → Picks top viral tags by likes → Maps them to your product using 5 proven video formats.</p>
+    <!-- LEFT PANEL: FILE INPUT -->
+    <div class="panel">
+        <span class="panel-header">ASSET IMPORT</span>
+        <form action="/campaign" method="POST" enctype="multipart/form-data" id="campaignForm">
+            <div class="form-group">
+                <label>Target Asset</label>
+                <div class="file-upload-wrapper" id="drop-zone">
+                    <input type="file" name="asset" id="asset-input" accept="image/*">
+                    <div id="preview-text">
+                        [ DRAG & DROP ]<br><br>
+                        OR CLICK TO SELECT<br>
+                        IMAGE ASSET
+                    </div>
+                    <img id="image-preview" src="" style="display:none; max-width:100%; object-fit:contain; border:1px solid var(--hud-blue); filter: grayscale(100%) contrast(1.2) sepia(100%) hue-rotate(180deg) saturate(3);">
+                </div>
             </div>
-            
-            <form action="/campaign" method="POST">
-                <div class="field-row">
-                    <label for="product">🛒 Product Name:</label>
-                    <input id="product" name="product" type="text" placeholder="e.g. Bocari Water, Handmade Earrings..." required>
-                </div>
-                
-                <div class="field-row">
-                    <label for="audience">👥 Target Audience:</label>
-                    <input id="audience" name="audience" type="text" placeholder="e.g. Gen Z women 18-25 interested in beauty">
-                </div>
 
-                <div class="field-row">
-                    <label for="goal">🎯 Campaign Goal:</label>
-                    <select id="goal" name="goal" style="font-family: inherit; font-size: 12px; padding: 3px; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff; background: white; width: 100%;">
-                        <option value="increase brand awareness">🔔 Increase Brand Awareness</option>
-                        <option value="drive sales directly">💰 Drive Direct Sales</option>
-                        <option value="grow followers">📈 Grow Followers First</option>
-                        <option value="go viral">🔥 Go Viral</option>
-                    </select>
-                </div>
-                
-                <div class="button-row" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
-                    <button type="reset" class="win-btn">Reset</button>
-                    <button type="submit" class="win-btn primary">🎬 Generate Campaign (5 Videos)</button>
-                </div>
-            </form>
+            <div class="form-group">
+                <label>ENTITY NAME</label>
+                <input type="text" name="product" placeholder="[ ENTER PRODUCT / ENTITY ]" required>
+            </div>
+
+            <div class="form-group">
+                <label>PARAMETERS (AUDIENCE)</label>
+                <input type="text" name="audience" placeholder="[ GEN Z / TARGET DEMO ]">
+            </div>
+
+            <div class="form-group">
+                <label>CORE THREAD (GOAL)</label>
+                <select name="goal">
+                    <option value="increase brand awareness">01. BRAND AWARENESS</option>
+                    <option value="drive sales directly">02. DIRECT CONVERSION</option>
+                    <option value="grow followers">03. AUDIENCE EXPANSION</option>
+                    <option value="go viral">04. MAXIMUM REACH</option>
+                </select>
+            </div>
+
+            <button type="submit" class="hud-btn" style="width: 100%; justify-content: center; margin-top: 20px;">
+                INITIALIZE SEQUENCE
+            </button>
+        </form>
+    </div>
+
+    <!-- CENTER PANEL: WIREFRAME ANIMATION -->
+    <div class="wireframe-container">
+        <div class="hud-corner hud-tl" style="top:0; left:0;"></div>
+        <div class="hud-corner hud-tr" style="top:0; right:0;"></div>
+        <div class="hud-corner hud-bl" style="bottom:0; left:0;"></div>
+        <div class="hud-corner hud-br" style="bottom:0; right:0;"></div>
+        <svg class="wireframe-svg" viewBox="-100 -100 200 200">
+            <!-- Simulated 3D sphere/torus using multiple ellipses -->
+            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(0)" />
+            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(30)" />
+            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(60)" />
+            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(90)" />
+            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(120)" />
+            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(150)" />
+            
+            <ellipse cx="0" cy="0" rx="80" ry="40" transform="rotate(45)" />
+            <ellipse cx="0" cy="0" rx="80" ry="40" transform="rotate(135)" />
+            
+            <circle cx="0" cy="0" r="10" />
+            <circle cx="0" cy="0" r="90" stroke-dasharray="2 4" />
+        </svg>
+        <div style="position: absolute; right: -50px; font-size: 10px; border-left: 1px solid var(--hud-blue); padding-left: 5px;">
+            Y: 45.092<br>
+            X: 12.100<br>
+            Z: 88.001
         </div>
     </div>
+
+    <!-- RIGHT PANEL: SYSTEM DIAGNOSTICS -->
+    <div class="panel">
+        <span class="panel-header panel-header-right">DIAGNOSTICS</span>
+        <div style="margin-bottom: 20px;">
+            <label>NETWORK INTEGRITY</label>
+            <div class="tech-bar">
+                <div class="active"></div><div class="active"></div><div class="active"></div>
+                <div class="active"></div><div class="active"></div><div class="active"></div>
+                <div class="active"></div><div></div><div></div><div></div>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label>PROCESSING POWER</label>
+            <div class="tech-bar">
+                <div class="active"></div><div class="active"></div><div class="active"></div>
+                <div class="active"></div><div></div><div></div><div></div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label>ALGORITHM STATUS</label>
+            <div style="font-family: var(--font-pixel); font-size: 16px; border: 1px solid var(--hud-blue); padding: 10px;">
+                > SCANNING 16.2K TRENDS<br>
+                > MAPPING HOOKS<br>
+                > AWAITING INPUT...
+            </div>
+        </div>
+    </div>
+
 </div>
+
+<script>
+    // Simple image preview logic
+    const input = document.getElementById('asset-input');
+    const preview = document.getElementById('image-preview');
+    const text = document.getElementById('preview-text');
+
+    input.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                text.style.display = 'none';
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+</script>
 {% endblock %}

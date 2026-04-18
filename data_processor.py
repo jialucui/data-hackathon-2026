@@ -88,7 +88,7 @@ def generate_campaign(product: str, audience: str, goal: str):
     
     videos = []
     for i, vtype in enumerate(video_types):
-        trend = selected[i]['tag']
+        trend = selected[i % len(selected)]['tag']
         video = generate_video_script(product, audience, goal, trend, vtype)
         videos.append(video)
     

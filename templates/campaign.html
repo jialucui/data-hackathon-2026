@@ -1,158 +1,135 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="window window-campaign">
-    <div class="title-bar">
-        <div class="title-bar-text">
-            <img src="https://win98icons.alexmeub.com/icons/png/directory_explorer-2.png" width="16">
-            Campaign Plan: {{ data.product }}
+<div class="dashboard">
+    <!-- LEFT PANEL: ASSET & PARAMS -->
+    <div class="panel" style="align-self: start;">
+        <span class="panel-header">ASSET_DATA</span>
+        {% if image_b64 %}
+            <img class="asset-preview" src="{{ image_b64 }}" alt="Uploaded Asset">
+        {% else %}
+            <div class="asset-preview" style="display: flex; align-items: center; justify-content: center; font-size: 10px; text-align: center;">
+                [ NO ASSET PROVIDED ]<br>
+                ANALYSIS PROCEEDING
+            </div>
+        {% endif %}
+        
+        <div style="margin-top: 15px; font-size: 12px; line-height: 1.8;">
+            <div>> ENTITY: <strong>{{ data.product }}</strong></div>
+            <div>> TARGET_DEMO: <strong>{{ data.audience }}</strong></div>
+            <div>> CORE_THREAD: <strong>{{ data.goal }}</strong></div>
         </div>
-        <div class="title-bar-controls">
-            <button aria-label="Minimize"></button>
-            <button aria-label="Maximize"></button>
-            <button aria-label="Close" onclick="window.location.href='/'"></button>
+
+        <div style="margin-top: 30px;">
+            <a href="/" class="hud-btn" style="width:100%; justify-content: center;">
+                [ RECALIBRATE / NEW ]
+            </a>
+            <button onclick="alert('SYSTEM OVERRIDE INITIATED... Please adjust parameters in the main hub.')" class="hud-btn" style="width:100%; justify-content: center; margin-top: 10px;">
+                [ ADJUST SCRIPT ]
+            </button>
         </div>
     </div>
-    
-    <div class="window-body">
-        <!-- Campaign Header Summary -->
-        <div class="campaign-header" style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
-            <div class="info-chip">🛒 Product: <strong>{{ data.product }}</strong></div>
-            <div class="info-chip">👥 Audience: <strong>{{ data.audience }}</strong></div>
-            <div class="info-chip">🎯 Goal: <strong>{{ data.goal }}</strong></div>
-        </div>
 
-        <!-- Milestones -->
-        <div class="window inner-window" style="margin-bottom: 12px;">
-            <div class="title-bar" style="background: #000080;">
-                <div class="title-bar-text">📈 Campaign Milestones</div>
-            </div>
-            <div class="window-body" style="padding: 8px;">
-                <table style="width:100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background: #c0c0c0;">
-                            <th style="text-align:left; padding: 3px 6px; border: 1px solid #808080;">Week</th>
-                            <th style="text-align:left; padding: 3px 6px; border: 1px solid #808080;">Target</th>
-                            <th style="text-align:left; padding: 3px 6px; border: 1px solid #808080;">KPI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for m in data.milestones %}
-                        <tr>
-                            <td style="padding: 3px 6px; border: 1px solid #c0c0c0;">Week {{ m.week }}</td>
-                            <td style="padding: 3px 6px; border: 1px solid #c0c0c0;">{{ m.target }}</td>
-                            <td style="padding: 3px 6px; border: 1px solid #c0c0c0; font-weight: bold;">{{ m.kpi }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    <!-- CENTER PANEL: GENERATED SCRIPTS -->
+    <div class="panel" style="max-height: 700px; overflow-y: auto;">
+        <span class="panel-header">CAMPAIGN_OUTPUT</span>
+        
+        <div style="margin-bottom: 20px; font-size: 18px;">
+            > TOTAL VIDEOS GENERATED: 5
         </div>
-
-        <!-- Video Cards -->
-        <p style="font-weight: bold; margin-bottom: 6px;">🎬 5-Video Campaign Script:</p>
 
         {% for video in data.videos %}
-        <div class="window inner-window" style="margin-bottom: 10px;">
-            <div class="title-bar video-titlebar">
-                <div class="title-bar-text" style="font-size: 11px;">
-                    {{ video.icon }} Video {{ loop.index }} (Post Day {{ video.schedule_day }}) — {{ video.type }}
-                </div>
-                <div class="title-bar-controls">
-                    <button aria-label="Minimize" onclick="toggleScript('script-{{ loop.index }}', this)">_</button>
-                </div>
+        <div class="script-block">
+            <div class="script-title">
+                [ SEQ {{ loop.index }} ] {{ video.type }} 
+                <span style="font-size: 12px; float: right; opacity: 0.7;">DAY {{ video.schedule_day }}</span>
             </div>
-            <div class="window-body" id="script-{{ loop.index }}">
-                <!-- Meta info -->
-                <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
-                    <span class="info-chip">🔥 Trend: <strong>#{{ video.trend }}</strong></span>
-                    <span class="info-chip">⏱ {{ video.estimated_length }}</span>
-                    <span class="info-chip">🎯 {{ video.goal }}</span>
-                </div>
-
-                <!-- Title -->
-                <div class="script-section" style="margin-bottom: 8px;">
-                    <p class="script-label">📌 TITLE:</p>
-                    <div class="pitch-box">{{ video.title }}</div>
-                </div>
-
-                <!-- Script -->
-                <div class="script-section">
-                    <p class="script-label">📝 SCRIPT:</p>
-                    <div class="script-block">
-                        <p class="script-part-label">HOOK (First 3 seconds):</p>
-                        <pre class="script-text">{{ video.script.hook }}</pre>
-                        
-                        <p class="script-part-label">BODY:</p>
-                        <pre class="script-text">{{ video.script.body }}</pre>
-                        
-                        <p class="script-part-label">CTA (Call to Action):</p>
-                        <pre class="script-text">{{ video.script.cta }}</pre>
-                    </div>
-                </div>
-
-                <div style="margin-top: 8px; text-align: right;">
-                    <button class="win-btn" onclick="copyScript({{ loop.index }})">📋 Copy Script</button>
-                </div>
+            
+            <div style="font-size: 12px; margin-bottom: 10px; opacity: 0.8;">
+                TREND: #{{ video.trend }} | TGT_LEN: {{ video.estimated_length }}
             </div>
-        </div>
-        {% endfor %}
 
-        <div style="display: flex; justify-content: space-between; margin-top: 12px; flex-wrap: wrap; gap: 8px;">
-            <button class="win-btn" onclick="copyAll()">📋 Copy All Scripts</button>
-            <a href="/" class="win-btn" style="text-decoration: none;">🔄 New Campaign</a>
-        </div>
-    </div>
-</div>
+            <div style="border: 1px dashed var(--hud-blue); padding: 10px; margin-bottom: 10px; font-size: 12px;">
+                <strong>TITLE:</strong> {{ video.title }}
+            </div>
 
-<!-- Hidden full content for copy -->
-<textarea id="all-scripts" style="position:absolute; left:-9999px; top:0;">
-Campaign Plan for: {{ data.product }}
-Audience: {{ data.audience }}
-Goal: {{ data.goal }}
-
-{% for video in data.videos %}
-=====================================
-VIDEO {{ loop.index }} — {{ video.type }}
-Post on: Day {{ video.schedule_day }}
-Trending Hook: #{{ video.trend }}
-=====================================
-
-TITLE: {{ video.title }}
-
-SCRIPT:
+            <div class="script-content">
+                <strong>> HOOK:</strong><br>
+                {{ video.script.hook }}<br><br>
+                <strong>> BODY:</strong><br>
+                {{ video.script.body }}<br><br>
+                <strong>> CTA:</strong><br>
+                {{ video.script.cta }}
+            </div>
+            
+            <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                <button class="hud-btn" onclick="copyScript({{ loop.index }})" style="font-size: 10px; padding: 4px 10px;">COPY_SEQ_{{ loop.index }}</button>
+            </div>
+            
+            <!-- hidden block for easy copy -->
+            <div id="hidden-script-{{ loop.index }}" style="display:none;">
 {{ video.script.hook }}
 
 {{ video.script.body }}
 
+{{ video.script.cta }}
+            </div>
+        </div>
+        {% endfor %}
+        
+        <button class="hud-btn" onclick="copyAll()" style="width:100%; justify-content:center;">
+            [ EXPORT ALL SEQUENCES ]
+        </button>
+    </div>
+
+    <!-- RIGHT PANEL: MILESTONES -->
+    <div class="panel" style="align-self: start;">
+        <span class="panel-header panel-header-right">PROJECTIONS</span>
+        
+        {% for m in data.milestones %}
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--grid-color); padding-bottom: 10px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">> WEEK {{ m.week }}</div>
+            <div style="font-size: 12px; margin-bottom: 2px;">TGT: {{ m.target }}</div>
+            <div style="font-size: 12px; opacity: 0.8;">KPI: {{ m.kpi }}</div>
+        </div>
+        {% endfor %}
+
+        <div style="margin-top: 20px;">
+            <label>INTEGRATION PROBABILITY</label>
+            <div class="tech-bar">
+                <div class="active"></div><div class="active"></div><div class="active"></div>
+                <div class="active"></div><div class="active"></div><div class="active"></div>
+                <div class="active"></div><div class="active"></div><div></div><div></div>
+            </div>
+            <div style="text-align:right; font-size: 10px; margin-top:2px;">82.5%</div>
+        </div>
+    </div>
+</div>
+
+<textarea id="all-scripts" style="position:absolute; left:-9999px; top:0;">
+{% for video in data.videos %}
+=== SEQ {{ loop.index }} ===
+TITLE: {{ video.title }}
+HOOK:
+{{ video.script.hook }}
+BODY:
+{{ video.script.body }}
+CTA:
 {{ video.script.cta }}
 
 {% endfor %}
 </textarea>
 
 <script>
-function toggleScript(id, btn) {
-    const el = document.getElementById(id);
-    if (el.style.display === 'none') {
-        el.style.display = '';
-        btn.textContent = '_';
-    } else {
-        el.style.display = 'none';
-        btn.textContent = '□';
-    }
-}
 function copyScript(idx) {
-    const hookEl = document.querySelector(`#script-${idx} .script-text:nth-of-type(1)`);
-    const bodyEl = document.querySelector(`#script-${idx} .script-text:nth-of-type(2)`);
-    const ctaEl = document.querySelector(`#script-${idx} .script-text:nth-of-type(3)`);
-    const text = [hookEl, bodyEl, ctaEl].map(e => e ? e.innerText : '').join('\n\n');
+    const text = document.getElementById(`hidden-script-${idx}`).innerText;
     navigator.clipboard.writeText(text);
-    alert('Script copied to clipboard!');
+    alert(`SEQUENCE ${idx} EXTRACTED`);
 }
 function copyAll() {
     const text = document.getElementById('all-scripts').value;
     navigator.clipboard.writeText(text);
-    alert('All 5 scripts copied!');
+    alert('ALL SEQUENCES EXTRACTED TO CLIPBOARD');
 }
 </script>
 {% endblock %}
