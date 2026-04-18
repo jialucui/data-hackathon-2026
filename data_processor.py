@@ -1,11 +1,122 @@
 import pandas as pd
 import random
 import os
+import re
 
 CSV_PATH = '../CA_Trending.csv'
 
 # Cache trends so we only read CSV once
 _trends_cache = None
+
+# -------------------------------
+# SMART TREND RECOMMENDATION ENGINE
+# -------------------------------
+
+def tokenize(text: str):
+    return re.findall(r'\w+', text.lower())
+
+
+def keyword_match_score(trend: str, text: str):
+    trend_words = tokenize(trend)
+    user_words = tokenize(text)
+
+    score = 0
+    for word in user_words:
+        if word in trend_words:
+            score += 10
+    return score
+
+
+def category_boost(product: str, trend: str):
+    product = product.lower()
+    trend = trend.lower()
+
+    boosts = {
+        "fitness": ["gym", "workout", "challenge", "transformation"],
+        "beauty": ["glow", "makeup", "routine", "skincare"],
+        "tech": ["ai", "iphone", "setup", "productivity"],
+        "food": ["recipe", "taste", "challenge", "snack"],
+        "fashion": ["outfit", "style", "haul", "lookbook"]
+    }
+
+    category = "general"
+
+    if any(x in product for x in ["protein", "gym", "fitness", "supplement"]):
+        category = "fitness"
+    elif any(x in product for x in ["cream", "serum", "beauty", "makeup"]):
+        category = "beauty"
+    elif any(x in product for x in ["phone", "laptop", "app", "software"]):
+        category = "tech"
+    elif any(x in product for x in ["drink", "snack", "food", "coffee"]):
+        category = "food"
+    elif any(x in product for x in ["shirt", "shoe", "bag", "fashion"]):
+        category = "fashion"
+
+    score = 0
+    if category in boosts:
+        for kw in boosts[category]:
+            if kw in trend:
+                score += 20
+
+    return score
+
+
+def goal_boost(goal: str, trend: str):
+    goal = goal.lower()
+    trend = trend.lower()
+
+    if "sales" in goal or "conversion" in goal:
+        if any(x in trend for x in ["review", "results", "before", "after"]):
+            return 20
+
+    if "awareness" in goal:
+        if any(x in trend for x in ["viral", "challenge", "trend"]):
+            return 20
+
+    if "engagement" in goal:
+        if any(x in trend for x in ["challenge", "vs", "debate"]):
+            return 20
+
+    return 0
+
+
+def score_trend(trend_data, product, audience, goal):
+    trend = trend_data["tag"]
+    engagement = trend_data["score"]
+
+    score = 0
+
+    # Popularity score
+    score += min(engagement / 10000, 50)
+
+    # Match scores
+    score += keyword_match_score(trend, product)
+    score += keyword_match_score(trend, audience)
+
+    # Product category fit
+    score += category_boost(product, trend)
+
+    # Goal fit
+    score += goal_boost(goal, trend)
+
+    return score
+
+
+def get_best_trends(product, audience, goal, top_n=5):
+    trends = get_top_trends(100)
+
+    ranked = []
+    for t in trends:
+        s = score_trend(t, product, audience, goal)
+        ranked.append({
+            "tag": t["tag"],
+            "score": t["score"],
+            "smart_score": s
+        })
+
+    ranked.sort(key=lambda x: x["smart_score"], reverse=True)
+
+    return ranked[:top_n]
 
 def get_top_trends(limit=50):
     global _trends_cache
@@ -45,8 +156,7 @@ def generate_campaign(product: str, audience: str, goal: str):
     Each video uses a different trending hook and script style.
     """
     # Pick 5 different trends for 5 different videos
-    trends = get_top_trends(100)
-    selected = random.sample(trends, min(5, len(trends)))
+    selected = get_best_trends(product, audience, goal, 5)
     
     video_types = [
         {
@@ -89,7 +199,17 @@ def generate_campaign(product: str, audience: str, goal: str):
     videos = []
     for i, vtype in enumerate(video_types):
         trend = selected[i]['tag']
-        video = generate_video_script(product, audience, goal, trend, vtype)
+        smart_score = selected[i]['smart_score']
+
+        video = generate_video_script(
+            product,
+            audience,
+            goal,
+            trend,
+            vtype,
+            smart_score
+        )
+
         videos.append(video)
     
     return {
@@ -106,7 +226,7 @@ def generate_campaign(product: str, audience: str, goal: str):
     }
 
 
-def generate_video_script(product: str, audience: str, goal: str, trend: str, vtype: dict) -> dict:
+def generate_video_script(product: str, audience: str, goal: str, trend: str, vtype: dict, smart_score: float) -> dict:
     """Generate a complete video script based on the type."""
     
     trend_cap = trend.title()
@@ -206,6 +326,7 @@ def generate_video_script(product: str, audience: str, goal: str, trend: str, vt
         "goal": vtype["goal"],
         "icon": vtype["icon"],
         "trend": trend,
+        "smart_score": smart_score,
         "script": {
             "hook": script_data["hook"],
             "body": script_data["body"],
