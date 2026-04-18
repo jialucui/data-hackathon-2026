@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="window window-campaign">
+    <div class="title-bar">
+        <div class="title-bar-text">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_explorer-2.png" width="16">
+            Campaign Plan: {{ data.product }}
+        </div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="window.location.href='/'"></button>
+        </div>
+    </div>
+    
+    <div class="window-body">
+        <!-- Campaign Header Summary -->
+        <div class="campaign-header" style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+            <div class="info-chip">🛒 Product: <strong>{{ data.product }}</strong></div>
+            <div class="info-chip">👥 Audience: <strong>{{ data.audience }}</strong></div>
+            <div class="info-chip">🎯 Goal: <strong>{{ data.goal }}</strong></div>
+        </div>
+
+        <!-- Milestones -->
+        <div class="window inner-window" style="margin-bottom: 12px;">
+            <div class="title-bar" style="background: #000080;">
+                <div class="title-bar-text">📈 Campaign Milestones</div>
+            </div>
+            <div class="window-body" style="padding: 8px;">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #c0c0c0;">
+                            <th style="text-align:left; padding: 3px 6px; border: 1px solid #808080;">Week</th>
+                            <th style="text-align:left; padding: 3px 6px; border: 1px solid #808080;">Target</th>
+                            <th style="text-align:left; padding: 3px 6px; border: 1px solid #808080;">KPI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in data.milestones %}
+                        <tr>
+                            <td style="padding: 3px 6px; border: 1px solid #c0c0c0;">Week {{ m.week }}</td>
+                            <td style="padding: 3px 6px; border: 1px solid #c0c0c0;">{{ m.target }}</td>
+                            <td style="padding: 3px 6px; border: 1px solid #c0c0c0; font-weight: bold;">{{ m.kpi }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Video Cards -->
+        <p style="font-weight: bold; margin-bottom: 6px;">🎬 5-Video Campaign Script:</p>
+
+        {% for video in data.videos %}
+        <div class="window inner-window" style="margin-bottom: 10px;">
+            <div class="title-bar video-titlebar">
+                <div class="title-bar-text" style="font-size: 11px;">
+                    {{ video.icon }} Video {{ loop.index }} (Post Day {{ video.schedule_day }}) — {{ video.type }}
+                </div>
+                <div class="title-bar-controls">
+                    <button aria-label="Minimize" onclick="toggleScript('script-{{ loop.index }}', this)">_</button>
+                </div>
+            </div>
+            <div class="window-body" id="script-{{ loop.index }}">
+                <!-- Meta info -->
+                <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+                    <span class="info-chip">🔥 Trend: <strong>#{{ video.trend }}</strong></span>
+                    <span class="info-chip">⏱ {{ video.estimated_length }}</span>
+                    <span class="info-chip">🎯 {{ video.goal }}</span>
+                </div>
+
+                <!-- Title -->
+                <div class="script-section" style="margin-bottom: 8px;">
+                    <p class="script-label">📌 TITLE:</p>
+                    <div class="pitch-box">{{ video.title }}</div>
+                </div>
+
+                <!-- Script -->
+                <div class="script-section">
+                    <p class="script-label">📝 SCRIPT:</p>
+                    <div class="script-block">
+                        <p class="script-part-label">HOOK (First 3 seconds):</p>
+                        <pre class="script-text">{{ video.script.hook }}</pre>
+                        
+                        <p class="script-part-label">BODY:</p>
+                        <pre class="script-text">{{ video.script.body }}</pre>
+                        
+                        <p class="script-part-label">CTA (Call to Action):</p>
+                        <pre class="script-text">{{ video.script.cta }}</pre>
+                    </div>
+                </div>
+
+                <div style="margin-top: 8px; text-align: right;">
+                    <button class="win-btn" onclick="copyScript({{ loop.index }})">📋 Copy Script</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div style="display: flex; justify-content: space-between; margin-top: 12px; flex-wrap: wrap; gap: 8px;">
+            <button class="win-btn" onclick="copyAll()">📋 Copy All Scripts</button>
+            <a href="/" class="win-btn" style="text-decoration: none;">🔄 New Campaign</a>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden full content for copy -->
+<textarea id="all-scripts" style="position:absolute; left:-9999px; top:0;">
+Campaign Plan for: {{ data.product }}
+Audience: {{ data.audience }}
+Goal: {{ data.goal }}
+
+{% for video in data.videos %}
+=====================================
+VIDEO {{ loop.index }} — {{ video.type }}
+Post on: Day {{ video.schedule_day }}
+Trending Hook: #{{ video.trend }}
+=====================================
+
+TITLE: {{ video.title }}
+
+SCRIPT:
+{{ video.script.hook }}
+
+{{ video.script.body }}
+
+{{ video.script.cta }}
+
+{% endfor %}
+</textarea>
+
+<script>
+function toggleScript(id, btn) {
+    const el = document.getElementById(id);
+    if (el.style.display === 'none') {
+        el.style.display = '';
+        btn.textContent = '_';
+    } else {
+        el.style.display = 'none';
+        btn.textContent = '□';
+    }
+}
+function copyScript(idx) {
+    const hookEl = document.querySelector(`#script-${idx} .script-text:nth-of-type(1)`);
+    const bodyEl = document.querySelector(`#script-${idx} .script-text:nth-of-type(2)`);
+    const ctaEl = document.querySelector(`#script-${idx} .script-text:nth-of-type(3)`);
+    const text = [hookEl, bodyEl, ctaEl].map(e => e ? e.innerText : '').join('\n\n');
+    navigator.clipboard.writeText(text);
+    alert('Script copied to clipboard!');
+}
+function copyAll() {
+    const text = document.getElementById('all-scripts').value;
+    navigator.clipboard.writeText(text);
+    alert('All 5 scripts copied!');
+}
+</script>
+{% endblock %}

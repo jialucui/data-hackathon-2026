@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="window window-main">
+    <div class="title-bar">
+        <div class="title-bar-text">
+            <img src="https://win98icons.alexmeub.com/icons/png/mine-0.png" width="16">
+            热度借势模拟器 — Campaign Generator.exe
+        </div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close"></button>
+        </div>
+    </div>
+    
+    <div class="window-body">
+        <div class="menu-bar">
+            <span><u>F</u>ile</span>
+            <span><u>E</u>dit</span>
+            <span><u>H</u>elp</span>
+        </div>
+
+        <div class="content-area">
+            <p style="margin-bottom: 5px;"><strong>热度借势模拟器 (Trending Piggybacking Simulator)</strong></p>
+            <p style="margin-bottom: 15px; color: #444;">Generate a complete 5-video YouTube campaign with full scripts. Each video uses a different trending hook to build awareness, engagement, and eventually sales.</p>
+
+            <div class="sunken-panel" style="background:#fff; padding: 8px; margin-bottom: 12px;">
+                <p style="margin:0; font-size: 11px; color:#444;">⚡ Algorithm: Scans 16,200 YouTube trending videos → Picks top viral tags by likes → Maps them to your product using 5 proven video formats.</p>
+            </div>
+            
+            <form action="/campaign" method="POST">
+                <div class="field-row">
+                    <label for="product">🛒 Product Name:</label>
+                    <input id="product" name="product" type="text" placeholder="e.g. Bocari Water, Handmade Earrings..." required>
+                </div>
+                
+                <div class="field-row">
+                    <label for="audience">👥 Target Audience:</label>
+                    <input id="audience" name="audience" type="text" placeholder="e.g. Gen Z women 18-25 interested in beauty">
+                </div>
+
+                <div class="field-row">
+                    <label for="goal">🎯 Campaign Goal:</label>
+                    <select id="goal" name="goal" style="font-family: inherit; font-size: 12px; padding: 3px; border-top: 2px solid #808080; border-left: 2px solid #808080; border-right: 2px solid #fff; border-bottom: 2px solid #fff; background: white; width: 100%;">
+                        <option value="increase brand awareness">🔔 Increase Brand Awareness</option>
+                        <option value="drive sales directly">💰 Drive Direct Sales</option>
+                        <option value="grow followers">📈 Grow Followers First</option>
+                        <option value="go viral">🔥 Go Viral</option>
+                    </select>
+                </div>
+                
+                <div class="button-row" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="reset" class="win-btn">Reset</button>
+                    <button type="submit" class="win-btn primary">🎬 Generate Campaign (5 Videos)</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

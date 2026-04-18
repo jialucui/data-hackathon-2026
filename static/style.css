@@ -1,0 +1,369 @@
+/* Windows 95 / Minesweeper CSS */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
+  font-size: 12px;
+  background-color: #008080; /* Classic Win95 teal desktop */
+  min-height: 100vh;
+}
+
+.desktop {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Icons would float freely on a real desktop - windows are centered */
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  padding-bottom: 50px; /* make room for taskbar */
+}
+
+/* ========================
+   WINDOW CHROME
+======================== */
+.window {
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  box-shadow: 2px 2px 0 #000000;
+  min-width: 320px;
+  width: 100%;
+  max-width: 520px;
+}
+
+.window-main { max-width: 480px; }
+.window-result { max-width: 560px; }
+.window-trends { max-width: 480px; }
+
+.title-bar {
+  height: 22px;
+  background: linear-gradient(to right, #000080, #1084d0);
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.title-bar-text {
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.title-bar-controls {
+  display: flex;
+  gap: 2px;
+}
+
+.title-bar-controls button {
+  width: 16px;
+  height: 14px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  font-size: 9px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #000;
+}
+
+.title-bar-controls button[aria-label="Minimize"]::after { content: '_'; }
+.title-bar-controls button[aria-label="Maximize"]::after { content: '□'; }
+.title-bar-controls button[aria-label="Close"]::after { content: '✕'; font-size: 8px; }
+
+.title-bar-controls button:active {
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+/* ========================
+   MENU BAR
+======================== */
+.menu-bar {
+  background: #c0c0c0;
+  padding: 2px 4px;
+  border-bottom: 1px solid #808080;
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.menu-bar span {
+  cursor: pointer;
+  padding: 1px 4px;
+}
+
+.menu-bar span:hover {
+  background: #000080;
+  color: white;
+}
+
+/* ========================
+   WINDOW BODY
+======================== */
+.window-body {
+  padding: 12px;
+}
+
+/* ========================
+   FORM ELEMENTS
+======================== */
+.field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.field-row label {
+  font-size: 12px;
+}
+
+.field-row input[type="text"] {
+  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
+  font-size: 12px;
+  padding: 3px 5px;
+  background: #ffffff;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  outline: none;
+  width: 100%;
+}
+
+.field-row input[type="text"]:focus {
+  border-top-color: #000000;
+  border-left-color: #000000;
+}
+
+/* ========================
+   BUTTONS
+======================== */
+.win-btn {
+  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
+  font-size: 12px;
+  padding: 4px 16px;
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-block;
+  min-width: 75px;
+  text-align: center;
+}
+
+.win-btn:active {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  padding: 5px 15px 3px 17px; /* slight shift to simulate press */
+}
+
+.win-btn.primary {
+  font-weight: bold;
+  border: 2px solid #000000; /* thick black outline = default button */
+  box-shadow: inset 0 0 0 2px #c0c0c0;
+}
+
+/* ========================
+   TASKBAR
+======================== */
+.taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 34px;
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  z-index: 1000;
+}
+
+.start-btn {
+  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.taskbar-divider {
+  width: 2px;
+  height: 26px;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  margin: 0 4px;
+}
+
+.taskbar-item {
+  text-decoration: none;
+  color: #000000;
+  font-size: 12px;
+  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
+  padding: 2px 10px;
+  background: #c0c0c0;
+  border: 1px solid #c0c0c0;
+  display: flex;
+  align-items: center;
+  height: 26px;
+}
+
+.taskbar-item:hover {
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+}
+
+.taskbar-item.active {
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  background: #b4b4b4;
+}
+
+/* ========================
+   SUNKEN PANEL
+======================== */
+.sunken-panel {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+}
+
+/* ========================
+   CONTENT AREA
+======================== */
+.content-area {
+  padding: 8px 4px;
+}
+
+/* ========================
+   RESULT PAGE SPECIFICS
+======================== */
+.result-content p {
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.pitch-box {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  background: #ffffff;
+  padding: 10px;
+  min-height: 60px;
+  line-height: 1.6;
+}
+
+/* ========================
+   TABLE
+======================== */
+table th, table td {
+  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
+  font-size: 12px;
+}
+
+/* Campaign page */
+.window-campaign {
+  max-width: 780px;
+  width: 100%;
+}
+
+.inner-window {
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+}
+
+.info-chip {
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  padding: 2px 8px;
+  font-size: 11px;
+  display: inline-block;
+}
+
+.video-titlebar {
+  background: linear-gradient(to right, #000080, #1a88d0);
+  cursor: pointer;
+}
+
+.script-label {
+  font-weight: bold;
+  font-size: 11px;
+  margin: 0 0 4px 0;
+}
+
+.script-part-label {
+  font-weight: bold;
+  font-size: 11px;
+  margin: 10px 0 4px 0;
+  color: #000080;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.script-block {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  background: #ffffff;
+  padding: 8px;
+}
+
+.script-text {
+  font-family: 'MS Sans Serif', 'Share Tech Mono', Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 0 0 4px 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+

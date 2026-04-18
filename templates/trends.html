@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="window window-trends" style="max-width: 500px;">
+    <div class="title-bar">
+        <div class="title-bar-text">
+            <img src="https://win98icons.alexmeub.com/icons/png/directory_explorer-2.png" width="16">
+            Trending Data Explorer
+        </div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="window.location.href='/'"></button>
+        </div>
+    </div>
+    
+    <div class="window-body">
+        <p style="margin-bottom: 10px;">Current top trends from YouTube dataset:</p>
+        
+        <div class="sunken-panel" style="height: 300px; overflow-y: scroll; background: white; border: 2px inset #dfdfdf;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #c0c0c0; border-bottom: 1px solid #808080;">
+                        <th style="text-align: left; padding: 2px 4px; border-right: 1px solid #808080; border-left: 1px solid white; border-top: 1px solid white;">Trend Tag</th>
+                        <th style="text-align: right; padding: 2px 4px; border-right: 1px solid #808080; border-left: 1px solid white; border-top: 1px solid white;">Heat Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trend in trends %}
+                    <tr>
+                        <td style="padding: 2px 4px;">{{ trend.tag }}</td>
+                        <td style="text-align: right; padding: 2px 4px;">{{ trend.score }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+            <a href="/" class="win-btn" style="text-decoration: none; text-align: center;">OK</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="window window-result" style="max-width: 600px;">
+    <div class="title-bar">
+        <div class="title-bar-text">
+            <img src="https://win98icons.alexmeub.com/icons/png/msg_information-0.png" width="16">
+            Analysis Results
+        </div>
+        <div class="title-bar-controls">
+            <button aria-label="Close" onclick="window.location.href='/'"></button>
+        </div>
+    </div>
+    
+    <div class="window-body">
+        <div class="result-content" style="display: flex; gap: 15px; padding: 10px;">
+            <img src="https://win98icons.alexmeub.com/icons/png/msg_information-0.png" width="32" height="32" alt="Info">
+            <div>
+                <h4 style="margin-top: 0;">Match Successfully Generated</h4>
+                <p><strong>Product:</strong> {{ analysis.product }}</p>
+                <p><strong>Piggybacked Trend:</strong> #{{ analysis.trend }}</p>
+                <p><strong>Heat Match:</strong> {{ analysis.score }}%</p>
+                
+                <div class="pitch-box" style="margin-top: 15px; padding: 10px; background: white; border: 2px inset #dfdfdf;">
+                    <p style="font-style: italic;">"{{ analysis.pitch }}"</p>
+                </div>
+                
+                <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button class="win-btn" onclick="navigator.clipboard.writeText('{{ analysis.pitch }}')">Copy to Clipboard</button>
+                    <a href="/" class="win-btn" style="text-decoration: none; text-align: center;">Analyze Another</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

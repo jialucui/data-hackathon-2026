@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending Piggybacking Simulator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="desktop">
+        <!-- Start Button / Taskbar Area -->
+        <div class="taskbar">
+            <button class="start-btn">
+                <img src="https://win98icons.alexmeub.com/icons/png/windows_slanted-1.png" alt="Start" width="16">
+                Start
+            </button>
+            <div class="taskbar-divider"></div>
+            <a href="/" class="taskbar-item active">Simulator</a>
+            <a href="/trends" class="taskbar-item">Top Trends</a>
+        </div>
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
