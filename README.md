@@ -1,4 +1,4 @@
-# 热度借势模拟器 — Trending Piggybacking Simulator
+# Trending Piggybacking Simulator
 
 A Windows 95-styled Python web app that generates complete 5-video YouTube marketing campaigns for your product by piggybacking on real trending topics.
 
@@ -14,11 +14,11 @@ Enter your product, target audience, and campaign goal — the app scans a YouTu
 Video formats included:
 | # | Format | Goal |
 |---|--------|------|
-| 1 | 🎣 借势钩子 Trend Hook | Awareness |
-| 2 | 🏆 挑战视频 Challenge | Engagement |
-| 3 | ⚔️ 对比视频 Comparison | Credibility |
-| 4 | 💬 故事视频 Story | Trust |
-| 5 | 🚀 结果视频 Results | Conversion |
+| 1 | 🎣 Trend Hook | Awareness |
+| 2 | 🏆 Challenge Video | Engagement |
+| 3 | ⚔️ Comparison Video | Credibility |
+| 4 | 💬 Story Video | Trust |
+| 5 | 🚀 Results Video | Conversion |
 
 ## Tech Stack
 

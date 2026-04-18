@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUTÉRA // Reality By Design</title>
+    <title>TrentPilot // Reality By Design</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
     <!-- Global HUD Overlays -->
     <div class="hud-corner hud-tl"></div>
@@ -13,31 +15,11 @@
     <div class="hud-corner hud-bl"></div>
     <div class="hud-corner hud-br"></div>
 
-    <div class="hud-header">
-        <span>SUTÉRA // CORE SYSTEM</span>
-        <span>CHANGE REALITY</span>
-        <span>LOCAL TIME<br>ZUR 05:09 PM</span>
-    </div>
-
-    <div class="hud-footer">
-        <span>[XR/MR/VR] PERCEPTUAL INTERFACES</span>
-        <span>LINKEDIN // MEDIUM // INSTAGRAM</span>
-    </div>
+    <h1 class="main-title">TrentPilot</h1>
 
     <div class="container">
-        <h1 class="main-title">REALITY,<br>BY DESIGN.</h1>
         {% block content %}{% endblock %}
     </div>
-
-    <script>
-        // Simple script to update time in HUD header
-        function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-            document.querySelector('.hud-header span:last-child').innerHTML = `LOCAL TIME<br>ZUR ${timeStr}`;
-        }
-        setInterval(updateTime, 60000);
-        updateTime();
-    </script>
 </body>
+
 </html>

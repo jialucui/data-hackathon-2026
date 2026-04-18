@@ -8,21 +8,32 @@
         <span class="panel-header">ASSET IMPORT</span>
         <form action="/campaign" method="POST" enctype="multipart/form-data" id="campaignForm">
             <div class="form-group">
-                <label>Target Asset</label>
-                <div class="file-upload-wrapper" id="drop-zone">
-                    <input type="file" name="asset" id="asset-input" accept="image/*">
-                    <div id="preview-text">
-                        [ DRAG & DROP ]<br><br>
-                        OR CLICK TO SELECT<br>
-                        IMAGE ASSET
+                <label>Target assets (multiple images)</label>
+                <div class="file-upload-zone" id="drop-zone" tabindex="0" aria-label="Image upload area">
+                    <!-- no name: files are attached via FormData on submit (avoids empty multipart + DataTransfer quirks) -->
+                    <input type="file" id="campaign-assets" class="file-input-hidden" accept="image/*" multiple tabindex="-1" aria-hidden="true">
+                    <div id="preview-empty" role="button" tabindex="0" aria-label="Choose image files">
+                        <div id="preview-text" style="line-height: 1.6;">
+                            Drag images here or click to browse<br>
+                            <span style="font-size: 13px; opacity: 0.85;">Multiple files · use × on a thumbnail to remove</span>
+                        </div>
+                        <p class="file-upload-hint" id="upload-hint-empty">You can submit without images (no reference assets will be used).</p>
                     </div>
-                    <img id="image-preview" src="" style="display:none; max-width:100%; object-fit:contain; border:1px solid var(--hud-blue); filter: grayscale(100%) contrast(1.2) sepia(100%) hue-rotate(180deg) saturate(3);">
+                    <div id="preview-gallery" class="asset-preview-grid" hidden></div>
+                    <div class="file-upload-add-row" id="add-more-row" hidden>
+                        <button type="button" class="btn-add-images" id="btn-add-more">＋ Add more images</button>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>ENTITY NAME</label>
                 <input type="text" name="product" placeholder="[ ENTER PRODUCT / ENTITY ]" required>
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label>PRODUCT DETAILS / BRIEF</label>
+                <textarea name="product_details" placeholder="[ DESCRIBE CORE FEATURES, VIBE, OR FINE-TUNING CONTEXT ]" rows="3"></textarea>
             </div>
 
             <div class="form-group">
@@ -40,7 +51,7 @@
                 </select>
             </div>
 
-            <button type="submit" class="hud-btn" style="width: 100%; justify-content: center; margin-top: 20px;">
+            <button type="submit" class="hud-btn" id="campaign-submit" style="width: 100%; justify-content: center; margin-top: 20px;">
                 INITIALIZE SEQUENCE
             </button>
         </form>
@@ -52,76 +63,448 @@
         <div class="hud-corner hud-tr" style="top:0; right:0;"></div>
         <div class="hud-corner hud-bl" style="bottom:0; left:0;"></div>
         <div class="hud-corner hud-br" style="bottom:0; right:0;"></div>
-        <svg class="wireframe-svg" viewBox="-100 -100 200 200">
-            <!-- Simulated 3D sphere/torus using multiple ellipses -->
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(0)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(30)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(60)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(90)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(120)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(150)" />
-            
-            <ellipse cx="0" cy="0" rx="80" ry="40" transform="rotate(45)" />
-            <ellipse cx="0" cy="0" rx="80" ry="40" transform="rotate(135)" />
-            
-            <circle cx="0" cy="0" r="10" />
-            <circle cx="0" cy="0" r="90" stroke-dasharray="2 4" />
-        </svg>
-        <div style="position: absolute; right: -50px; font-size: 10px; border-left: 1px solid var(--hud-blue); padding-left: 5px;">
+        <canvas id="particle-canvas" style="width: 100%; height: 100%;"></canvas>
+        <div style="position: absolute; right: -50px; font-size: 12px; font-family: var(--font-body); border-left: 1px solid var(--hud-blue); padding-left: 5px;">
             Y: 45.092<br>
             X: 12.100<br>
             Z: 88.001
         </div>
     </div>
 
-    <!-- RIGHT PANEL: SYSTEM DIAGNOSTICS -->
-    <div class="panel">
-        <span class="panel-header panel-header-right">DIAGNOSTICS</span>
-        <div style="margin-bottom: 20px;">
-            <label>NETWORK INTEGRITY</label>
-            <div class="tech-bar">
-                <div class="active"></div><div class="active"></div><div class="active"></div>
-                <div class="active"></div><div class="active"></div><div class="active"></div>
-                <div class="active"></div><div></div><div></div><div></div>
-            </div>
-        </div>
-        
-        <div style="margin-bottom: 20px;">
-            <label>PROCESSING POWER</label>
-            <div class="tech-bar">
-                <div class="active"></div><div class="active"></div><div class="active"></div>
-                <div class="active"></div><div></div><div></div><div></div>
-            </div>
-        </div>
-
-        <div style="margin-bottom: 20px;">
-            <label>ALGORITHM STATUS</label>
-            <div style="font-family: var(--font-pixel); font-size: 16px; border: 1px solid var(--hud-blue); padding: 10px;">
-                > SCANNING 16.2K TRENDS<br>
-                > MAPPING HOOKS<br>
-                > AWAITING INPUT...
-            </div>
-        </div>
-    </div>
+    <!-- Right panel removed -->
 
 </div>
 
 <script>
-    // Simple image preview logic
-    const input = document.getElementById('asset-input');
-    const preview = document.getElementById('image-preview');
-    const text = document.getElementById('preview-text');
+(function () {
+    const fileInput = document.getElementById('campaign-assets');
+    const dropZone = document.getElementById('drop-zone');
+    const previewGallery = document.getElementById('preview-gallery');
+    const previewEmpty = document.getElementById('preview-empty');
+    const addMoreRow = document.getElementById('add-more-row');
+    const btnAddMore = document.getElementById('btn-add-more');
+    const form = document.getElementById('campaignForm');
+    const submitBtn = document.getElementById('campaign-submit');
 
-    input.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
+    /** @type {File[]} */
+    let stagedFiles = [];
+
+    function isImageFile(f) {
+        return f.type.startsWith('image/');
+    }
+
+    function renderGallery() {
+        previewGallery.innerHTML = '';
+        if (stagedFiles.length === 0) {
+            previewGallery.hidden = true;
+            previewEmpty.hidden = false;
+            addMoreRow.hidden = true;
+            try { fileInput.value = ''; } catch (err) { /* ignore */ }
+            return;
+        }
+        previewEmpty.hidden = true;
+        previewGallery.hidden = false;
+        addMoreRow.hidden = false;
+
+        stagedFiles.forEach(function (file, index) {
+            const wrap = document.createElement('div');
+            wrap.className = 'asset-thumb';
+            const img = document.createElement('img');
+            img.alt = file.name || 'preview';
             const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                text.style.display = 'none';
-            }
-            reader.readAsDataURL(this.files[0]);
+            reader.onload = function (e) { img.src = e.target.result; };
+            reader.readAsDataURL(file);
+
+            const rm = document.createElement('button');
+            rm.type = 'button';
+            rm.className = 'asset-thumb-remove';
+            rm.setAttribute('aria-label', 'Remove this image');
+            rm.textContent = '×';
+            rm.addEventListener('click', function (ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                stagedFiles.splice(index, 1);
+                renderGallery();
+            });
+
+            wrap.appendChild(img);
+            wrap.appendChild(rm);
+            previewGallery.appendChild(wrap);
+        });
+    }
+
+    function appendFiles(fileList) {
+        const arr = Array.from(fileList || []).filter(isImageFile);
+        arr.forEach(function (f) { stagedFiles.push(f); });
+        try { fileInput.value = ''; } catch (err) { /* ignore */ }
+        renderGallery();
+    }
+
+    fileInput.addEventListener('change', function () {
+        if (fileInput.files && fileInput.files.length) appendFiles(fileInput.files);
+    });
+
+    btnAddMore.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        fileInput.click();
+    });
+
+    previewEmpty.addEventListener('click', function (e) {
+        e.stopPropagation();
+        fileInput.click();
+    });
+
+    previewEmpty.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            fileInput.click();
         }
     });
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (ev) {
+        dropZone.addEventListener(ev, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+    dropZone.addEventListener('dragover', function () { dropZone.classList.add('is-dragover'); });
+    dropZone.addEventListener('dragleave', function () { dropZone.classList.remove('is-dragover'); });
+    dropZone.addEventListener('drop', function (e) {
+        dropZone.classList.remove('is-dragover');
+        const fl = e.dataTransfer && e.dataTransfer.files;
+        if (fl && fl.length) appendFiles(fl);
+    });
+
+    form.addEventListener('submit', function (e) {
+        if (stagedFiles.length === 0) {
+            return;
+        }
+        e.preventDefault();
+        if (submitBtn) submitBtn.disabled = true;
+        var fd = new FormData();
+        fd.append('product', form.querySelector('[name="product"]').value);
+        fd.append('product_details', form.querySelector('[name="product_details"]').value);
+        fd.append('audience', form.querySelector('[name="audience"]').value);
+        fd.append('goal', form.querySelector('[name="goal"]').value);
+        stagedFiles.forEach(function (f) {
+            fd.append('assets', f, f.name || 'image');
+        });
+        var action = form.getAttribute('action') || '/campaign';
+        fetch(action, {
+            method: 'POST',
+            body: fd,
+            credentials: 'same-origin',
+        })
+            .then(function (res) {
+                if (!res.ok) {
+                    return res.text().then(function (t) {
+                        throw new Error(res.status + ' ' + (t || '').slice(0, 200));
+                    });
+                }
+                return res.text();
+            })
+            .then(function (html) {
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(function (err) {
+                console.error(err);
+                alert('Submit failed: ' + (err && err.message ? err.message : String(err)));
+            })
+            .finally(function () {
+                if (submitBtn) submitBtn.disabled = false;
+            });
+    });
+})();
+
+    // Particle Point Cloud Animation
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    function resizeCanvas() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    let particles = [];
+    const numParticles = 2500;
+    let currentShape = 0;
+    let time = 0;
+
+    for(let i = 0; i < numParticles; i++) {
+        particles.push({
+            x: Math.random() * 200 - 100,
+            y: Math.random() * 200 - 100,
+            z: Math.random() * 200 - 100,
+            tx: 0, ty: 0, tz: 0
+        });
+    }
+
+    function getShapePos(i, num, shapeType) {
+        let x = 0, y = 0, z = 0;
+        let t = i / num;
+        
+        if (shapeType === 0) {
+            // Crisp Video Play Button
+            let p = Math.random();
+            if (p < 0.6) {
+                // Crisp rectangle frame with slight border
+                let edge = Math.random();
+                if (edge < 0.25) { x = -1.0; y = (Math.random() - 0.5) * 1.4; } // left
+                else if (edge < 0.50) { x = +1.0; y = (Math.random() - 0.5) * 1.4; } // right
+                else if (edge < 0.75) { y = -0.7; x = (Math.random() - 0.5) * 2.0; } // bottom
+                else { y = +0.7; x = (Math.random() - 0.5) * 2.0; } // top
+                
+                x += (Math.random() - 0.5) * 0.08;
+                y += (Math.random() - 0.5) * 0.08;
+                z = (Math.random() - 0.5) * 0.05;
+            } else {
+                // Solid precise triangle
+                let u = Math.random(), v = Math.random();
+                if (u + v > 1) { u = 1 - u; v = 1 - v; }
+                x = -0.3 + u * 0 + v * 0.7;
+                y = -0.4 + u * 0.8 + v * 0.4;
+                z = (Math.random() - 0.5) * 0.05;
+            }
+        } else if (shapeType === 1) {
+            // Professional Bar + Line Chart
+            let p = Math.random();
+            if (p < 0.2) {
+                // Axes (L-shape)
+                if (Math.random() > 0.4) {
+                    x = -0.8 + Math.random() * 1.6; y = 0.6; // X axis
+                } else {
+                    x = -0.8; y = -0.5 + Math.random() * 1.1; // Y axis
+                }
+                x += (Math.random()-0.5)*0.02; y += (Math.random()-0.5)*0.02; z = 0;
+            } else if (p < 0.6) {
+                // Bar charts
+                let bars = 5;
+                let b = Math.floor(Math.random() * bars);
+                let heights = [0.2, 0.35, 0.5, 0.8, 1.1]; // ascending
+                x = -0.6 + b * 0.3 + (Math.random() - 0.5) * 0.12;
+                y = 0.6 - Math.random() * heights[b];
+                z = (Math.random() - 0.5) * 0.1;
+            } else {
+                // Exponential curved trend line
+                let t = Math.random();
+                x = -0.6 + t * 1.4;
+                y = 0.5 - (0.2 + Math.pow(t, 2.5) * 1.2);
+                z = 0.1 + (Math.random() - 0.5) * 0.05;
+                x += (Math.random()-0.5)*0.03; y += (Math.random()-0.5)*0.03;
+            }
+        } else if (shapeType === 2) {
+            // Precision Target Bullseye with crosshairs
+            let p = Math.random();
+            if (p < 0.8) {
+                // Concentric tight rings
+                let ring = Math.floor(Math.random() * 4);
+                let r = [0.15, 0.4, 0.65, 0.9][ring];
+                r += (Math.random() - 0.5) * 0.04;
+                let angle = Math.random() * Math.PI * 2;
+                x = r * Math.cos(angle);
+                y = r * Math.sin(angle);
+                z = (Math.random() - 0.5) * 0.05;
+            } else {
+                // Crosshairs
+                if (Math.random() > 0.5) { x = (Math.random() - 0.5) * 2.2; y = 0; }
+                else { x = 0; y = (Math.random() - 0.5) * 2.2; }
+                x += (Math.random()-0.5)*0.02; y += (Math.random()-0.5)*0.02; z = 0;
+            }
+        } else if (shapeType === 3) {
+            // Neural Network / AI Topology (Highly ordered layers)
+            let layers = [
+                [-0.8, -0.6, -0.2, 0.2, 0.6], // Input
+                [-0.8, -0.4, 0, 0.4, 0.8],   // Hidden
+                [-0.3, 0.3]                  // Output
+            ];
+            let xPos = [-0.6, 0, 0.6];
+            let p = Math.random();
+            if (p < 0.4) {
+                // Node clusters
+                let l = Math.floor(Math.random() * 3);
+                let ny = layers[l][Math.floor(Math.random() * layers[l].length)];
+                let nx = xPos[l];
+                let theta = Math.random() * Math.PI * 2;
+                let phi = Math.acos(2 * Math.random() - 1);
+                let r = Math.random() * 0.08;
+                x = nx + r * Math.sin(phi) * Math.cos(theta);
+                y = ny + r * Math.sin(phi) * Math.sin(theta);
+                z = r * Math.cos(phi);
+            } else {
+                // Synaptic connections (lines)
+                let l = (Math.random() > 0.6) ? 1 : 0;
+                let n1y = layers[l][Math.floor(Math.random() * layers[l].length)];
+                let n2y = layers[l+1][Math.floor(Math.random() * layers[l+1].length)];
+                let t = Math.random();
+                x = xPos[l] + t * (xPos[l+1] - xPos[l]);
+                let arch = Math.sin(t * Math.PI) * 0.1 * (Math.random() - 0.5);
+                y = n1y + t * (n2y - n1y) + arch;
+                x += (Math.random() - 0.5) * 0.015;
+                y += (Math.random() - 0.5) * 0.015;
+                z = arch + (Math.random() - 0.5) * 0.02;
+            }
+        } else if (shapeType === 4) {
+            // Elegant Magnifying Glass
+            let p = Math.random();
+            if (p < 0.6) {
+                let r = 0.5 + (Math.random() - 0.5) * 0.06;
+                let angle = Math.random() * Math.PI * 2;
+                x = -0.2 + r * Math.cos(angle);
+                y = -0.2 + r * Math.sin(angle);
+                z = (Math.random() - 0.5) * 0.05;
+            } else if (p < 0.75) {
+                let r = Math.random() * 0.45;
+                let angle = Math.random() * Math.PI * 2;
+                x = -0.2 + r * Math.cos(angle);
+                y = -0.2 + r * Math.sin(angle);
+                z = (Math.random() - 0.5) * 0.1;
+            } else {
+                let t = Math.random();
+                x = 0.15 + t * 0.6 + (Math.random() - 0.5) * 0.08;
+                y = 0.15 + t * 0.6 + (Math.random() - 0.5) * 0.08;
+                z = (Math.random() - 0.5) * 0.05;
+            }
+        } else if (shapeType === 5) {
+            // Global Wireframe Sphere (Sharp lines)
+            let p = Math.random();
+            let theta, phi;
+            if (p < 0.4) {
+                // Latitude lines
+                let lats = 7;
+                phi = (Math.floor(Math.random() * lats) + 1) * Math.PI / (lats + 1);
+                theta = Math.random() * Math.PI * 2;
+            } else if (p < 0.8) {
+                // Longitude lines
+                let longs = 12;
+                theta = Math.floor(Math.random() * longs) * Math.PI * 2 / longs;
+                phi = Math.acos(2 * Math.random() - 1);
+            } else {
+                theta = Math.random() * Math.PI * 2;
+                phi = Math.acos(2 * Math.random() - 1);
+            }
+            theta += (Math.random() - 0.5) * 0.03;
+            phi += (Math.random() - 0.5) * 0.03;
+            
+            let r = 0.85;
+            x = r * Math.sin(phi) * Math.cos(theta);
+            y = r * Math.sin(phi) * Math.sin(theta);
+            z = r * Math.cos(phi);
+        }
+        
+        return {x: x*220, y: y*220, z: z*220};
+    }
+
+    function updateTargets() {
+        for(let i = 0; i < numParticles; i++) {
+            let pos = getShapePos(i, numParticles, currentShape);
+            particles[i].tx = pos.x;
+            particles[i].ty = pos.y;
+            particles[i].tz = pos.z;
+        }
+        currentShape = (currentShape + 1) % 6;
+    }
+
+    setInterval(updateTargets, 4000);
+    updateTargets();
+
+    // Mouse Interaction
+    let mouseRotateX = 0;
+    let mouseRotateY = 0;
+    let isDragging = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let hasDragged = false;
+
+    canvas.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        hasDragged = false;
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+        canvas.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+        canvas.style.cursor = 'grab';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            hasDragged = true;
+            let dx = e.clientX - lastMouseX;
+            let dy = e.clientY - lastMouseY;
+            mouseRotateY += dx * 0.008;
+            mouseRotateX += dy * 0.008;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        }
+    });
+
+    canvas.addEventListener('click', (e) => {
+        if (!hasDragged) {
+            // Scatter the particles!
+            for(let i = 0; i < numParticles; i++) {
+                particles[i].x += (Math.random() - 0.5) * 3000;
+                particles[i].y += (Math.random() - 0.5) * 3000;
+                particles[i].z += (Math.random() - 0.5) * 3000;
+            }
+            // Trigger next shape immediately
+            updateTargets();
+        }
+    });
+
+    canvas.style.cursor = 'grab';
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += 0.003;
+        
+        let cx = canvas.width / 2;
+        let cy = canvas.height / 2;
+        
+        let cosY = Math.cos(time + mouseRotateY);
+        let sinY = Math.sin(time + mouseRotateY);
+        let cosX = Math.cos(time * 0.4 + 0.3 + mouseRotateX);
+        let sinX = Math.sin(time * 0.4 + 0.3 + mouseRotateX);
+        
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--hud-blue').trim() || '#2A4893';
+        
+        for(let i = 0; i < numParticles; i++) {
+            let p = particles[i];
+            
+            // Ease towards target
+            p.x += (p.tx - p.x) * 0.06;
+            p.y += (p.ty - p.y) * 0.06;
+            p.z += (p.tz - p.z) * 0.06;
+            
+            // 3D rotation
+            let rx = p.x * cosY - p.z * sinY;
+            let rz = p.z * cosY + p.x * sinY;
+            
+            let ry = p.y * cosX - rz * sinX;
+            let rz2 = rz * cosX + p.y * sinX;
+            
+            // Project (increased camera distance for larger scale)
+            let scale = 500 / (500 + rz2);
+            let px = cx + rx * scale;
+            let py = cy + ry * scale;
+            
+            if (scale > 0) {
+                ctx.globalAlpha = Math.min(1, Math.max(0.1, scale * 0.8));
+                ctx.beginPath();
+                ctx.arc(px, py, scale * 1.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        ctx.globalAlpha = 1;
+        
+        requestAnimationFrame(animate);
+    }
+    animate();
 </script>
 {% endblock %}

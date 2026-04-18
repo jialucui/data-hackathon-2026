@@ -1,20 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard">
+<div class="dashboard dashboard--three">
     <!-- LEFT PANEL: ASSET & PARAMS -->
     <div class="panel" style="align-self: start;">
         <span class="panel-header">ASSET_DATA</span>
-        {% if image_b64 %}
-            <img class="asset-preview" src="{{ image_b64 }}" alt="Uploaded Asset">
+        {% if images_b64 and images_b64|length > 0 %}
+            <div class="asset-gallery">
+                {% for src in images_b64 %}
+                <img class="asset-preview asset-preview--thumb" src="{{ src }}" alt="Uploaded asset {{ loop.index }}">
+                {% endfor %}
+            </div>
         {% else %}
-            <div class="asset-preview" style="display: flex; align-items: center; justify-content: center; font-size: 10px; text-align: center;">
+            <div class="asset-preview asset-preview--placeholder">
                 [ NO ASSET PROVIDED ]<br>
                 ANALYSIS PROCEEDING
             </div>
         {% endif %}
         
-        <div style="margin-top: 15px; font-size: 12px; line-height: 1.8;">
+        <div style="margin-top: 15px; font-size: 14px; line-height: 1.65;">
             <div>> ENTITY: <strong>{{ data.product }}</strong></div>
             <div>> TARGET_DEMO: <strong>{{ data.audience }}</strong></div>
             <div>> CORE_THREAD: <strong>{{ data.goal }}</strong></div>
@@ -24,9 +28,6 @@
             <a href="/" class="hud-btn" style="width:100%; justify-content: center;">
                 [ RECALIBRATE / NEW ]
             </a>
-            <button onclick="alert('SYSTEM OVERRIDE INITIATED... Please adjust parameters in the main hub.')" class="hud-btn" style="width:100%; justify-content: center; margin-top: 10px;">
-                [ ADJUST SCRIPT ]
-            </button>
         </div>
     </div>
 
@@ -35,8 +36,15 @@
         <span class="panel-header">CAMPAIGN_OUTPUT</span>
         
         <div style="margin-bottom: 20px; font-size: 18px;">
-            > TOTAL VIDEOS GENERATED: 5
+            <span>> TOTAL VIDEOS GENERATED: 5</span>
         </div>
+
+        {% if data.campaign_creative_summary %}
+        <div style="border: 1px solid rgba(42, 72, 147, 0.35); background: rgba(42, 72, 147, 0.06); padding: 12px 14px; margin-bottom: 18px; font-size: 12px; line-height: 1.55;">
+            <div style="margin-bottom: 6px; font-weight: bold; letter-spacing: 0.05em;">[ CAMPAIGN_CREATIVE_SUMMARY ]</div>
+            <div style="opacity: 0.92;">{{ data.campaign_creative_summary }}</div>
+        </div>
+        {% endif %}
 
         {% for video in data.videos %}
         <div class="script-block">
@@ -45,9 +53,42 @@
                 <span style="font-size: 12px; float: right; opacity: 0.7;">DAY {{ video.schedule_day }}</span>
             </div>
             
-            <div style="font-size: 12px; margin-bottom: 10px; opacity: 0.8;">
+            <div style="font-size: 13px; margin-bottom: 10px; opacity: 0.85;">
                 TREND: #{{ video.trend }} | TGT_LEN: {{ video.estimated_length }}
             </div>
+
+            <!-- New Algorithm Insights Panel -->
+            <div style="background: rgba(42, 72, 147, 0.05); border-left: 3px solid var(--hud-blue); padding: 12px; margin-bottom: 10px; font-size: 14px; font-family: var(--font-body); line-height: 1.55; color: var(--text-body);">
+                <div style="margin-bottom: 4px; border-bottom: 1px dotted rgba(42, 72, 147, 0.3); padding-bottom: 3px; display: inline-block;"><strong>[ ALGORITHM METRICS ]</strong></div>
+                <div style="margin-bottom: 12px; font-weight: bold; opacity: 0.9;">> {{ video.algorithm_analysis if video.algorithm_analysis else "Score Threshold Met (Fallback)" }}</div>
+                
+                <div style="margin-bottom: 4px; border-bottom: 1px dotted rgba(42, 72, 147, 0.3); padding-bottom: 3px; display: inline-block;"><strong>[ STRATEGY FINE-TUNING ]</strong></div>
+                <div style="font-style: italic; opacity: 0.85;">> {{ video.fine_tuning if video.fine_tuning else "Apply Standard Output Constraints" }}</div>
+            </div>
+
+            <!-- Publishing Logistics Panel -->
+            <div style="border: 1px solid rgba(42, 72, 147, 0.3); background: rgba(255, 255, 255, 0.5); padding: 10px; margin-bottom: 15px; font-size: 13px; font-family: var(--font-body);">
+                <div style="margin-bottom: 8px;"><strong>> OPTIMAL POST TIME:</strong> <span style="background: var(--hud-blue); color: var(--bg-color); padding: 2px 6px;">{{ video.best_post_time if video.best_post_time else "18:00 LOCAL TIME" }}</span></div>
+                <div><strong>> COMMENT/EXPOSURE STRATEGY:</strong> <span style="opacity: 0.8;">{{ video.content_strategy if video.content_strategy else "End with a question to drive engagement." }}</span></div>
+            </div>
+
+            {% if video.music_and_sound or video.visual_style or video.thumbnail_direction or video.product_execution_example %}
+            <div style="border: 1px solid rgba(80, 120, 200, 0.35); background: rgba(255, 255, 255, 0.65); padding: 10px; margin-bottom: 15px; font-size: 13px; line-height: 1.55; font-family: var(--font-body);">
+                <div style="margin-bottom: 8px; font-weight: bold; letter-spacing: 0.04em; color: var(--hud-blue);">[ CREATIVE_PACK — MUSIC / LOOK / THUMB / EXECUTION ]</div>
+                {% if video.music_and_sound %}
+                <div style="margin-bottom: 8px;"><strong>> MUSIC / AUDIO:</strong> <span style="opacity: 0.88;">{{ video.music_and_sound }}</span></div>
+                {% endif %}
+                {% if video.visual_style %}
+                <div style="margin-bottom: 8px;"><strong>> VISUAL / EDIT:</strong> <span style="opacity: 0.88;">{{ video.visual_style }}</span></div>
+                {% endif %}
+                {% if video.thumbnail_direction %}
+                <div style="margin-bottom: 8px;"><strong>> THUMBNAIL:</strong> <span style="opacity: 0.88;">{{ video.thumbnail_direction }}</span></div>
+                {% endif %}
+                {% if video.product_execution_example %}
+                <div><strong>> PRODUCT-SPECIFIC SHOT:</strong> <span style="opacity: 0.88;">{{ video.product_execution_example }}</span></div>
+                {% endif %}
+            </div>
+            {% endif %}
 
             <div style="border: 1px dashed var(--hud-blue); padding: 10px; margin-bottom: 10px; font-size: 12px;">
                 <strong>TITLE:</strong> {{ video.title }}
@@ -63,15 +104,30 @@
             </div>
             
             <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
-                <button class="hud-btn" onclick="copyScript({{ loop.index }})" style="font-size: 10px; padding: 4px 10px;">COPY_SEQ_{{ loop.index }}</button>
+                <button class="hud-btn" onclick="copyScript({{ loop.index }})" style="font-size: 12px; padding: 4px 10px;">COPY_SEQ_{{ loop.index }}</button>
             </div>
             
             <!-- hidden block for easy copy -->
             <div id="hidden-script-{{ loop.index }}" style="display:none;">
+{% if video.music_and_sound %}MUSIC / AUDIO:
+{{ video.music_and_sound }}
+
+{% endif %}{% if video.visual_style %}VISUAL / EDIT:
+{{ video.visual_style }}
+
+{% endif %}{% if video.thumbnail_direction %}THUMBNAIL:
+{{ video.thumbnail_direction }}
+
+{% endif %}{% if video.product_execution_example %}PRODUCT-SPECIFIC SHOT:
+{{ video.product_execution_example }}
+
+{% endif %}HOOK:
 {{ video.script.hook }}
 
+BODY:
 {{ video.script.body }}
 
+CTA:
 {{ video.script.cta }}
             </div>
         </div>
@@ -101,15 +157,30 @@
                 <div class="active"></div><div class="active"></div><div class="active"></div>
                 <div class="active"></div><div class="active"></div><div></div><div></div>
             </div>
-            <div style="text-align:right; font-size: 10px; margin-top:2px;">82.5%</div>
+            <div style="text-align:right; font-size: 12px; margin-top:2px;">82.5%</div>
         </div>
     </div>
 </div>
 
 <textarea id="all-scripts" style="position:absolute; left:-9999px; top:0;">
-{% for video in data.videos %}
+{% if data.campaign_creative_summary %}=== CAMPAIGN CREATIVE SUMMARY ===
+{{ data.campaign_creative_summary }}
+
+{% endif %}{% for video in data.videos %}
 === SEQ {{ loop.index }} ===
 TITLE: {{ video.title }}
+{% if video.music_and_sound %}MUSIC / AUDIO:
+{{ video.music_and_sound }}
+{% endif %}
+{% if video.visual_style %}VISUAL / EDIT:
+{{ video.visual_style }}
+{% endif %}
+{% if video.thumbnail_direction %}THUMBNAIL:
+{{ video.thumbnail_direction }}
+{% endif %}
+{% if video.product_execution_example %}PRODUCT-SPECIFIC SHOT:
+{{ video.product_execution_example }}
+{% endif %}
 HOOK:
 {{ video.script.hook }}
 BODY:
@@ -122,12 +193,12 @@ CTA:
 
 <script>
 function copyScript(idx) {
-    const text = document.getElementById(`hidden-script-${idx}`).innerText;
+    var text = document.getElementById('hidden-script-' + idx).innerText;
     navigator.clipboard.writeText(text);
-    alert(`SEQUENCE ${idx} EXTRACTED`);
+    alert('SEQUENCE ' + idx + ' EXTRACTED');
 }
 function copyAll() {
-    const text = document.getElementById('all-scripts').value;
+    var text = document.getElementById('all-scripts').value;
     navigator.clipboard.writeText(text);
     alert('ALL SEQUENCES EXTRACTED TO CLIPBOARD');
 }
