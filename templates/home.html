@@ -1,113 +1,266 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard">
-    
-    <!-- LEFT PANEL: FILE INPUT -->
-    <div class="panel">
-        <span class="panel-header">ASSET IMPORT</span>
+<div class="home-layout">
+
+    <!-- ====== LEFT: INPUT SECTION ====== -->
+    <div class="input-section">
+        <div class="section-label">[ INPUT TERMINAL ]</div>
+        <p class="section-desc">Fill in your product details below. The system will scan 16,200+ YouTube trending videos and generate a tailored 5-video campaign with full scripts.</p>
+
         <form action="/campaign" method="POST" enctype="multipart/form-data" id="campaignForm">
-            <div class="form-group">
-                <label>Target Asset</label>
-                <div class="file-upload-wrapper" id="drop-zone">
-                    <input type="file" name="asset" id="asset-input" accept="image/*">
-                    <div id="preview-text">
-                        [ DRAG & DROP ]<br><br>
-                        OR CLICK TO SELECT<br>
-                        IMAGE ASSET
+
+            <!-- STEP 1 -->
+            <div class="step-group">
+                <div class="step-number">01</div>
+                <div class="step-content">
+                    <label for="asset-input">UPLOAD PRODUCT IMAGE <span class="optional-tag">OPTIONAL</span></label>
+                    <div class="file-upload-wrapper" id="drop-zone">
+                        <input type="file" name="asset" id="asset-input" accept="image/*">
+                        <div id="preview-text">
+                            <span style="font-size: 28px;">📁</span><br>
+                            DRAG & DROP or CLICK<br>
+                            <span style="opacity:0.5; font-size:11px;">Accepts .png .jpg .webp</span>
+                        </div>
+                        <img id="image-preview" src="" alt="preview">
                     </div>
-                    <img id="image-preview" src="" style="display:none; max-width:100%; object-fit:contain; border:1px solid var(--hud-blue); filter: grayscale(100%) contrast(1.2) sepia(100%) hue-rotate(180deg) saturate(3);">
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>ENTITY NAME</label>
-                <input type="text" name="product" placeholder="[ ENTER PRODUCT / ENTITY ]" required>
+            <!-- STEP 2 -->
+            <div class="step-group">
+                <div class="step-number">02</div>
+                <div class="step-content">
+                    <label for="product-input">PRODUCT / BRAND NAME <span class="required-tag">REQUIRED</span></label>
+                    <input type="text" name="product" id="product-input" placeholder="e.g. Pocari Sweat, Handmade Earrings..." required>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>PARAMETERS (AUDIENCE)</label>
-                <input type="text" name="audience" placeholder="[ GEN Z / TARGET DEMO ]">
+            <!-- STEP 3 -->
+            <div class="step-group">
+                <div class="step-number">03</div>
+                <div class="step-content">
+                    <label for="audience-input">TARGET AUDIENCE</label>
+                    <input type="text" name="audience" id="audience-input" placeholder="e.g. Gen Z women 18-25 interested in beauty">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>CORE THREAD (GOAL)</label>
-                <select name="goal">
-                    <option value="increase brand awareness">01. BRAND AWARENESS</option>
-                    <option value="drive sales directly">02. DIRECT CONVERSION</option>
-                    <option value="grow followers">03. AUDIENCE EXPANSION</option>
-                    <option value="go viral">04. MAXIMUM REACH</option>
-                </select>
+            <!-- STEP 4 -->
+            <div class="step-group">
+                <div class="step-number">04</div>
+                <div class="step-content">
+                    <label for="goal-select">CAMPAIGN GOAL</label>
+                    <select name="goal" id="goal-select">
+                        <option value="increase brand awareness">🔔 Brand Awareness — get people to discover you</option>
+                        <option value="drive sales directly">💰 Direct Sales — drive purchases immediately</option>
+                        <option value="grow followers">📈 Grow Followers — build your community first</option>
+                        <option value="go viral">🔥 Go Viral — maximize reach and shares</option>
+                    </select>
+                </div>
             </div>
 
-            <button type="submit" class="hud-btn" style="width: 100%; justify-content: center; margin-top: 20px;">
-                INITIALIZE SEQUENCE
+            <!-- SUBMIT -->
+            <button type="submit" class="hud-btn submit-btn" id="submit-btn">
+                ⚡ GENERATE 5-VIDEO CAMPAIGN
             </button>
         </form>
     </div>
 
-    <!-- CENTER PANEL: WIREFRAME ANIMATION -->
-    <div class="wireframe-container">
-        <div class="hud-corner hud-tl" style="top:0; left:0;"></div>
-        <div class="hud-corner hud-tr" style="top:0; right:0;"></div>
-        <div class="hud-corner hud-bl" style="bottom:0; left:0;"></div>
-        <div class="hud-corner hud-br" style="bottom:0; right:0;"></div>
-        <svg class="wireframe-svg" viewBox="-100 -100 200 200">
-            <!-- Simulated 3D sphere/torus using multiple ellipses -->
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(0)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(30)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(60)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(90)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(120)" />
-            <ellipse cx="0" cy="0" rx="60" ry="20" transform="rotate(150)" />
-            
-            <ellipse cx="0" cy="0" rx="80" ry="40" transform="rotate(45)" />
-            <ellipse cx="0" cy="0" rx="80" ry="40" transform="rotate(135)" />
-            
-            <circle cx="0" cy="0" r="10" />
-            <circle cx="0" cy="0" r="90" stroke-dasharray="2 4" />
-        </svg>
-        <div style="position: absolute; right: -50px; font-size: 10px; border-left: 1px solid var(--hud-blue); padding-left: 5px;">
-            Y: 45.092<br>
-            X: 12.100<br>
-            Z: 88.001
+    <!-- ====== CENTER: 3D GLOBE ====== -->
+    <div class="globe-section">
+        <div id="globe-container"></div>
+        <div class="globe-overlay-label">GLOBAL TREND<br>ANALYSIS ENGINE</div>
+        <div class="globe-stats">
+            <div><span class="stat-value">16,200+</span><br>Videos Scanned</div>
+            <div><span class="stat-value">11</span><br>Countries</div>
+            <div><span class="stat-value">5</span><br>Scripts Generated</div>
         </div>
     </div>
 
-    <!-- RIGHT PANEL: SYSTEM DIAGNOSTICS -->
-    <div class="panel">
-        <span class="panel-header panel-header-right">DIAGNOSTICS</span>
-        <div style="margin-bottom: 20px;">
-            <label>NETWORK INTEGRITY</label>
-            <div class="tech-bar">
-                <div class="active"></div><div class="active"></div><div class="active"></div>
-                <div class="active"></div><div class="active"></div><div class="active"></div>
-                <div class="active"></div><div></div><div></div><div></div>
-            </div>
-        </div>
-        
-        <div style="margin-bottom: 20px;">
-            <label>PROCESSING POWER</label>
-            <div class="tech-bar">
-                <div class="active"></div><div class="active"></div><div class="active"></div>
-                <div class="active"></div><div></div><div></div><div></div>
+    <!-- ====== RIGHT: HOW IT WORKS ====== -->
+    <div class="info-section">
+        <div class="section-label">[ HOW IT WORKS ]</div>
+
+        <div class="how-step">
+            <div class="how-icon">📥</div>
+            <div>
+                <strong>Input</strong>
+                <p>Enter your product name, target audience, and campaign goal. Optionally upload a product image.</p>
             </div>
         </div>
 
-        <div style="margin-bottom: 20px;">
-            <label>ALGORITHM STATUS</label>
-            <div style="font-family: var(--font-pixel); font-size: 16px; border: 1px solid var(--hud-blue); padding: 10px;">
-                > SCANNING 16.2K TRENDS<br>
-                > MAPPING HOOKS<br>
-                > AWAITING INPUT...
+        <div class="how-step">
+            <div class="how-icon">🔍</div>
+            <div>
+                <strong>Analyze</strong>
+                <p>Our engine scans YouTube trending data from 11 countries, identifying the hottest tags and viral hooks.</p>
             </div>
+        </div>
+
+        <div class="how-step">
+            <div class="how-icon">🎬</div>
+            <div>
+                <strong>Generate</strong>
+                <p>You get a complete 5-video campaign plan: titles, hooks, scripts, CTAs, and a posting schedule.</p>
+            </div>
+        </div>
+
+        <div class="how-step">
+            <div class="how-icon">✏️</div>
+            <div>
+                <strong>Modify</strong>
+                <p>Copy any script, adjust parameters, and regenerate until you're satisfied.</p>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="section-label" style="margin-top:25px;">[ SYSTEM STATUS ]</div>
+        <div class="status-row">
+            <span>DATA FEED</span>
+            <span class="status-online">● ONLINE</span>
+        </div>
+        <div class="status-row">
+            <span>TREND ENGINE</span>
+            <span class="status-online">● READY</span>
+        </div>
+        <div class="status-row">
+            <span>SCRIPT GEN</span>
+            <span class="status-online">● STANDBY</span>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <label>DATA COVERAGE</label>
+            <div class="tech-bar">
+                <div class="active"></div><div class="active"></div><div class="active"></div>
+                <div class="active"></div><div class="active"></div><div class="active"></div>
+                <div class="active"></div><div class="active"></div><div class="active"></div><div></div>
+            </div>
+            <div style="text-align:right; font-size:10px; margin-top:3px; opacity:0.7;">92.4%</div>
         </div>
     </div>
 
 </div>
 
+<!-- Three.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script>
-    // Simple image preview logic
+    // ========== 3D GLOBE ==========
+    (function() {
+        const container = document.getElementById('globe-container');
+        const w = container.clientWidth || 450;
+        const h = container.clientHeight || 500;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+        camera.position.z = 3.2;
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(w, h);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // Globe sphere with wireframe
+        const globeGeo = new THREE.SphereGeometry(1, 48, 48);
+        const globeMat = new THREE.MeshBasicMaterial({
+            color: 0x2A4893,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.25
+        });
+        const globe = new THREE.Mesh(globeGeo, globeMat);
+        scene.add(globe);
+
+        // Solid inner sphere with slight glow
+        const innerGeo = new THREE.SphereGeometry(0.96, 48, 48);
+        const innerMat = new THREE.MeshBasicMaterial({
+            color: 0x0a1a3f,
+            transparent: true,
+            opacity: 0.6
+        });
+        const inner = new THREE.Mesh(innerGeo, innerMat);
+        scene.add(inner);
+
+        // Dot-pattern sphere for "data points"
+        const dotPositions = [];
+        for (let i = 0; i < 2000; i++) {
+            const phi = Math.acos(2 * Math.random() - 1);
+            const theta = 2 * Math.PI * Math.random();
+            const r = 1.01;
+            dotPositions.push(
+                r * Math.sin(phi) * Math.cos(theta),
+                r * Math.sin(phi) * Math.sin(theta),
+                r * Math.cos(phi)
+            );
+        }
+        const dotGeo = new THREE.BufferGeometry();
+        dotGeo.setAttribute('position', new THREE.Float32BufferAttribute(dotPositions, 3));
+        const dotMat = new THREE.PointsMaterial({ color: 0x5B7DD2, size: 0.015, transparent: true, opacity: 0.8 });
+        const dots = new THREE.Points(dotGeo, dotMat);
+        scene.add(dots);
+
+        // Orbit ring 1
+        const ring1Geo = new THREE.RingGeometry(1.4, 1.42, 120);
+        const ring1Mat = new THREE.MeshBasicMaterial({ color: 0x5B7DD2, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+        const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
+        ring1.rotation.x = Math.PI / 2.2;
+        ring1.rotation.y = 0.3;
+        scene.add(ring1);
+
+        // Orbit ring 2
+        const ring2Geo = new THREE.RingGeometry(1.6, 1.62, 120);
+        const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x2A4893, side: THREE.DoubleSide, transparent: true, opacity: 0.25 });
+        const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+        ring2.rotation.x = Math.PI / 3;
+        ring2.rotation.y = -0.5;
+        scene.add(ring2);
+
+        // Glow halo (sprite)
+        const spriteMat = new THREE.SpriteMaterial({
+            color: 0x3366cc,
+            transparent: true,
+            opacity: 0.15,
+        });
+        const sprite = new THREE.Sprite(spriteMat);
+        sprite.scale.set(4.5, 4.5, 1);
+        scene.add(sprite);
+
+        // Mouse interaction
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 0.5;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 0.5;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            globe.rotation.y += 0.003;
+            dots.rotation.y += 0.003;
+            inner.rotation.y += 0.003;
+            ring1.rotation.z += 0.001;
+            ring2.rotation.z -= 0.0008;
+
+            // Slight camera follow on mouse
+            camera.position.x += (mouseX - camera.position.x) * 0.02;
+            camera.position.y += (-mouseY - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resize
+        window.addEventListener('resize', () => {
+            const nw = container.clientWidth;
+            const nh = container.clientHeight;
+            camera.aspect = nw / nh;
+            camera.updateProjectionMatrix();
+            renderer.setSize(nw, nh);
+        });
+    })();
+
+    // ========== Image Preview ==========
     const input = document.getElementById('asset-input');
     const preview = document.getElementById('image-preview');
     const text = document.getElementById('preview-text');
